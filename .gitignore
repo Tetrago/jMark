@@ -1,0 +1,9 @@
+out.html
+test.md
+
+.gradle/
+
+.idea/
+build/
+
+!gradle-wrapper.jar
