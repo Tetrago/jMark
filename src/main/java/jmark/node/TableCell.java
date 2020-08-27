@@ -4,7 +4,14 @@ import jmark.Token;
 
 public class TableCell extends Node
 {
+    private boolean header_;
     private Table.Align align_ = Table.Align.LEFT;
+
+    public TableCell() { this(false); }
+    public TableCell(boolean header)
+    {
+        header_ = header;
+    }
 
     public void align(Table.Align align)
     {
@@ -35,5 +42,6 @@ public class TableCell extends Node
         return "Cell: " + align_.toString();
     }
 
+    public boolean isHeader() { return header_; }
     public Table.Align getAlign() { return align_; }
 }

@@ -1,14 +1,32 @@
-.align-center
+.align-center { text-align: center; }
+.align-right { text-align: right; }
+.align-left { text-align: left; }
+
+body
 {
-    text-align: center;
+    font-family: sans-serif;
+    margin-left: 15%;
+    margin-right: 15%;
+    color: #606c71;
 }
 
-.align-right
+.heading
 {
-    text-align: right;
+    color: #159957;
 }
 
-.align-left
+table
 {
-    text-align: left;
+    border-spacing: 0;
+}
+
+th, td
+{
+    padding: 0.5rem 1rem;
+    border: 1px solid #e9ebec;
+}
+
+th
+{
+    font-weight: bold;
 }

@@ -43,7 +43,7 @@ public class HtmlParser
             String line;
             while((line = reader.readLine()) != null)
             {
-                builder.append(line).append('\n');
+                builder.append(line.trim());
             }
         }
         catch(IOException e)
@@ -64,7 +64,7 @@ public class HtmlParser
                     .append("</style></head><body>");
             break;
         case HEADING:
-            builder.append("<h").append(((Heading)node).getLevel()).append(">");
+            builder.append("<h").append(((Heading)node).getLevel()).append(" class=\"heading\">");
             break;
         case TEXT:
             builder.append("<p>").append(((Text)node).getText());
@@ -83,7 +83,7 @@ public class HtmlParser
             builder.append("<tr>");
             break;
         case TABLE_CELL:
-            builder.append("<td class=\"align-")
+            builder.append(((TableCell)node).isHeader() ? "<th" : "<td").append(" class=\"align-")
                     .append(((TableCell)node).getAlign().toString().toLowerCase()).append("\">");
             break;
         }
@@ -115,7 +115,7 @@ public class HtmlParser
             builder.append("</tr>");
             break;
         case TABLE_CELL:
-            builder.append("</td>");
+            builder.append(((TableCell)node).isHeader() ? "</th>" : "</td>");
             break;
         }
     }

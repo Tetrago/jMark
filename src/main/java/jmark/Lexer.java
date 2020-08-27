@@ -79,9 +79,11 @@ public class Lexer
             {
                 String[] split = match.split("\\|");
 
+                boolean header = false;
                 if(stack.peek().getToken() != Token.TABLE)
                 {
                     addWhenValid(new Table(split.length - 1), true);
+                    header = true;
                 }
 
                 TableRow row = new TableRow();
@@ -89,7 +91,7 @@ public class Lexer
 
                 for(int i = 1; i < split.length; ++i)
                 {
-                    TableCell cell = new TableCell();
+                    TableCell cell = new TableCell(header);
                     int level = stack.size();
 
                     row.add(cell);
