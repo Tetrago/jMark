@@ -6,5 +6,8 @@ public enum Token
     HEADING,
     TEXT,
     LIST_GROUP,
-    LIST_ITEM
+    LIST_ITEM,
+    TABLE,
+    TABLE_ROW,
+    TABLE_CELL
 }
