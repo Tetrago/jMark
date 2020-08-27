@@ -2,14 +2,13 @@ package jmark;
 
 import jmark.node.*;
 
-import javax.print.attribute.standard.NumberOfDocuments;
 import java.util.Stack;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class Lexer
 {
-    private static final Pattern PATTERN = Pattern.compile("(?<heading>#+)|(?<item>(?<ordered>\\d\\.)|(-))|(?<text>[^\\n]+)");
+    private static final Pattern PATTERN = Pattern.compile("(?<table>(\\|[:\\-]+)+\\|)|(?<row>(\\|[^\\|\\n]+)+\\|)|(?<heading>#+)|(?<item>(?<ordered>\\d\\.)|(-))|(?<text>[^\\n]+)");
 
     private String title_;
     private Node document_;
@@ -50,7 +49,41 @@ public class Lexer
         while(matcher.find())
         {
             String match;
-            if((match = matcher.group("heading")) != null)      // Heading --------------------------------------
+            if((match = matcher.group("table")) != null)        // Table ----------------------------------------
+            {
+
+            }
+            else if((match = matcher.group("row")) != null)     // Row ------------------------------------------
+            {
+                if(stack.peek().getToken() != Token.TABLE)
+                {
+                    addWhenValid(new Table(), true);
+                }
+
+                TableRow row = new TableRow();
+                stack.peek().add(row);
+                stack.push(row);
+
+                String[] split = match.split("\\|");
+                for(int i = 1; i < split.length; ++i)
+                {
+                    TableCell cell = new TableCell();
+                    int level = stack.size();
+
+                    row.add(cell);
+                    stack.push(cell);
+
+                    recursiveAnalyzer(split[i].trim(), stack);
+
+                    while(stack.size() > level)
+                    {
+                        stack.pop();
+                    }
+                }
+
+                stack.pop();
+            }
+            else if((match = matcher.group("heading")) != null) // Heading --------------------------------------
             {
                 addWhenValid(new Heading(match.length()), true);
             }

@@ -2,8 +2,6 @@ package jmark;
 
 import jmark.node.*;
 
-import java.util.List;
-
 public class HtmlParser
 {
     private Lexer lexer_;
@@ -52,6 +50,15 @@ public class HtmlParser
         case LIST_ITEM:
             builder.append("<li>");
             break;
+        case TABLE:
+            builder.append("<table>");
+            break;
+        case TABLE_ROW:
+            builder.append("<tr>");
+            break;
+        case TABLE_CELL:
+            builder.append("<td>");
+            break;
         }
     }
 
@@ -73,6 +80,15 @@ public class HtmlParser
             break;
         case LIST_ITEM:
             builder.append("</li>");
+            break;
+        case TABLE:
+            builder.append("</table>");
+            break;
+        case TABLE_ROW:
+            builder.append("</tr>");
+            break;
+        case TABLE_CELL:
+            builder.append("</td>");
             break;
         }
     }

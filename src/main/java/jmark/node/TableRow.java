@@ -20,4 +20,10 @@ public class TableRow extends Node
     {
         return node.getToken() == Token.TABLE_CELL;
     }
+
+    @Override
+    public String toString()
+    {
+        return "Row";
+    }
 }

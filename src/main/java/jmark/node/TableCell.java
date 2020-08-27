@@ -20,4 +20,10 @@ public class TableCell extends Node
     {
         return true;
     }
+
+    @Override
+    public String toString()
+    {
+        return "Cell";
+    }
 }
