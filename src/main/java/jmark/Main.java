@@ -18,6 +18,14 @@ public class Main
         output.setRequired(true);
         options.addOption(output);
 
+        Option tree = new Option("t", "tree", true, "Tree description file");
+        tree.setRequired(false);
+        options.addOption(tree);
+
+        Option name = new Option("n", "name", true, "Name of generated page");
+        name.setRequired(false);
+        options.addOption(name);
+
         CommandLineParser clp = new DefaultParser();
         HelpFormatter formatter = new HelpFormatter();
         CommandLine cl;
@@ -28,8 +36,10 @@ public class Main
 
             String sourcePath = cl.getOptionValue("source");
             String outputPath = cl.getOptionValue("output");
+            String treePath = cl.getOptionValue("tree");
+            String title = cl.getOptionValue("name");
 
-            Lexer lexer = new Lexer();
+            Lexer lexer = new Lexer(title == null ? "jMark" : title);
             HtmlParser parser = new HtmlParser(lexer);
 
             StringBuilder builder = new StringBuilder();
@@ -43,6 +53,14 @@ public class Main
             }
 
             lexer.analyze(builder.toString());
+
+            if(treePath != null)
+            {
+                try(FileWriter writer = new FileWriter(treePath))
+                {
+                    writer.write(lexer.toString());
+                }
+            }
 
             try(FileWriter writer = new FileWriter(outputPath))
             {

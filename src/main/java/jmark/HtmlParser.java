@@ -1,6 +1,8 @@
 package jmark;
 
-import java.util.ListIterator;
+import jmark.node.*;
+
+import java.util.List;
 
 public class HtmlParser
 {
@@ -14,44 +16,64 @@ public class HtmlParser
     public String parse()
     {
         StringBuilder builder = new StringBuilder();
-        builder.append("<html><body>");
-
-        ListIterator<Token> iterator = lexer_.getTokens().listIterator();
-        while(iterator.hasNext())
-        {
-            parseElement(builder, iterator);
-        }
-
-        builder.append("</body></html>");
+        recursiveParse(lexer_.getRootNode(), builder);
         return builder.toString();
     }
 
-    private void parseElement(StringBuilder builder, ListIterator<Token> iterator)
+    private void recursiveParse(Node node, StringBuilder builder)
     {
-        Token current = iterator.next();
+        writeHeader(node, builder);
 
-        if(current.getType() == Token.Type.Heading)
+        for(Node child : node.getNodes())
         {
-            int level = current.getValue().length();
-
-            builder.append("<h").append(level).append(">");
-
-            if(iterator.hasNext())
-                builder.append(iterator.next().getValue());
-
-            builder.append("</h").append(level).append(">");
+            recursiveParse(child, builder);
         }
-        else if(current.getType() == Token.Type.Text)
+
+        writeFooter(node, builder);
+    }
+
+    private void writeHeader(Node node, StringBuilder builder)
+    {
+        switch(node.getToken())
         {
-            builder.append("<p>").append(current.getValue()).append("</p>");
+        case DOCUMENT:
+            builder.append("<html><head><title>").append(((Document)node).getTitle())
+                    .append("</title></head><body>");
+            break;
+        case HEADING:
+            builder.append("<h").append(((Heading)node).getLevel()).append(">");
+            break;
+        case TEXT:
+            builder.append("<p>").append(((Text)node).getText());
+            break;
+        case LIST_GROUP:
+            builder.append(((ListGroup)node).isOrdered() ? "<ol>" : "<ul>");
+            break;
+        case LIST_ITEM:
+            builder.append("<li>");
+            break;
         }
-        else if(current.getType() == Token.Type.UnorderedList)
+    }
+
+    private void writeFooter(Node node, StringBuilder builder)
+    {
+        switch(node.getToken())
         {
-            builder.append("<ul>");
-
-
-
-            builder.append("</ul>");
+        case DOCUMENT:
+            builder.append("</body></html>");
+            break;
+        case HEADING:
+            builder.append("</h").append(((Heading)node).getLevel()).append(">");
+            break;
+        case TEXT:
+            builder.append("</p>");
+            break;
+        case LIST_GROUP:
+            builder.append(((ListGroup)node).isOrdered() ? "</ol>" : "</ul>");
+            break;
+        case LIST_ITEM:
+            builder.append("</li>");
+            break;
         }
     }
 }
