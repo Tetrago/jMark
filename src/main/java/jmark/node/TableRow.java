@@ -4,11 +4,6 @@ import jmark.Token;
 
 public class TableRow extends Node
 {
-    public TableRow()
-    {
-        super(Token.TABLE_ROW);
-    }
-
     @Override
     public boolean isComplete()
     {
@@ -19,6 +14,12 @@ public class TableRow extends Node
     public boolean accepts(Node node)
     {
         return node.getToken() == Token.TABLE_CELL;
+    }
+
+    @Override
+    public Token getToken()
+    {
+        return Token.TABLE_ROW;
     }
 
     @Override

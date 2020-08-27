@@ -8,8 +8,6 @@ public class ListItem extends Node
 
     public ListItem(boolean ordered)
     {
-        super(Token.LIST_ITEM);
-
         ordered_ = ordered;
     }
 
@@ -24,6 +22,12 @@ public class ListItem extends Node
     {
         return node.getToken() == Token.HEADING
                 || node.getToken() == Token.TEXT;
+    }
+
+    @Override
+    public Token getToken()
+    {
+        return Token.LIST_ITEM;
     }
 
     @Override

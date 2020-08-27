@@ -8,7 +8,7 @@ import java.util.regex.Pattern;
 
 public class Lexer
 {
-    private static final Pattern PATTERN = Pattern.compile("(?<table>(\\|[:\\-]+)+\\|)|(?<row>(\\|[^\\|\\n]+)+\\|)|(?<heading>#+)|(?<item>(?<ordered>\\d\\.)|(-))|(?<text>[^\\n]+)");
+    private static final Pattern PATTERN = Pattern.compile("(?<table>(\\| *[:-]+ *)+\\|)|(?<row>(\\|[^\\|\\n]+)+\\|)|(?<heading>#+)|(?<item>(?<ordered>\\d\\.)|(-))|(?<text>[^\\n]+)");
 
     private String title_;
     private Node document_;
@@ -49,22 +49,44 @@ public class Lexer
         while(matcher.find())
         {
             String match;
-            if((match = matcher.group("table")) != null)        // Table ----------------------------------------
+            if((match = matcher.group("table")) != null         // Table ----------------------------------------
+                && stack.peek().getToken() == Token.TABLE
+                && ((Table)stack.peek()).getNodes().size() == 1)
             {
+                Table table = (Table)stack.peek();
 
+                String[] split = match.split("\\|");
+
+                for(int i = 0; i < table.getColumnCount(); ++i)
+                {
+                    String trim = split[i + 1].trim();
+
+                    if(trim.matches(":-+:"))
+                    {
+                        table.align(i, Table.Align.CENTER);
+                    }
+                    else if(trim.startsWith(":"))
+                    {
+                        table.align(i, Table.Align.LEFT);
+                    }
+                    else if(trim.endsWith(":"))
+                    {
+                        table.align(i, Table.Align.RIGHT);
+                    }
+                }
             }
             else if((match = matcher.group("row")) != null)     // Row ------------------------------------------
             {
+                String[] split = match.split("\\|");
+
                 if(stack.peek().getToken() != Token.TABLE)
                 {
-                    addWhenValid(new Table(), true);
+                    addWhenValid(new Table(split.length - 1), true);
                 }
 
                 TableRow row = new TableRow();
-                stack.peek().add(row);
                 stack.push(row);
 
-                String[] split = match.split("\\|");
                 for(int i = 1; i < split.length; ++i)
                 {
                     TableCell cell = new TableCell();
@@ -82,6 +104,7 @@ public class Lexer
                 }
 
                 stack.pop();
+                stack.peek().add(row);
             }
             else if((match = matcher.group("heading")) != null) // Heading --------------------------------------
             {
@@ -106,7 +129,7 @@ public class Lexer
                 addWhenValid(new Text(match.trim()));
             }
 
-            if(stack.peek().isComplete())
+            while(stack.peek().isComplete())
             {
                 stack.pop();
             }

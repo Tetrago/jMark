@@ -4,9 +4,36 @@ import jmark.Token;
 
 public class Table extends Node
 {
-    public Table()
+    public enum Align
     {
-        super(Token.TABLE);
+        LEFT,
+        CENTER,
+        RIGHT
+    }
+
+    private int columns_;
+    private Align[] alignments_;
+
+    public Table(int columns)
+    {
+        columns_ = columns;
+        alignments_ = new Align[columns];
+    }
+
+    public void applyAlignments()
+    {
+        for(Node row : getNodes())
+        {
+            for(int i = 0; i < columns_; ++i)
+            {
+                ((TableCell)row.getNodes().get(i)).align(alignments_[i]);
+            }
+        }
+    }
+
+    public void align(int i, Align align)
+    {
+        alignments_[i] = align;
     }
 
     @Override
@@ -22,8 +49,17 @@ public class Table extends Node
     }
 
     @Override
+    public Token getToken()
+    {
+        return Token.TABLE;
+    }
+
+    @Override
     public String toString()
     {
-        return "Table";
+        applyAlignments();
+        return "Table: " + columns_;
     }
+
+    public int getColumnCount() { return columns_; }
 }

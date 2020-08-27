@@ -8,8 +8,6 @@ public class ListGroup extends Node
 
     public ListGroup(boolean ordered)
     {
-        super(Token.LIST_GROUP);
-
         ordered_ = ordered;
     }
 
@@ -24,6 +22,12 @@ public class ListGroup extends Node
     {
         return node.getToken() == Token.LIST_ITEM
                 && ((ListItem)node).isOrdered() == ordered_;
+    }
+
+    @Override
+    public Token getToken()
+    {
+        return Token.LIST_GROUP;
     }
 
     @Override

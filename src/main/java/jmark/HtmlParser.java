@@ -2,6 +2,10 @@ package jmark;
 
 import jmark.node.*;
 
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+
 public class HtmlParser
 {
     private Lexer lexer_;
@@ -30,13 +34,34 @@ public class HtmlParser
         writeFooter(node, builder);
     }
 
+    private String loadStylesheet()
+    {
+        StringBuilder builder = new StringBuilder();
+
+        try(BufferedReader reader = new BufferedReader(new InputStreamReader(getClass().getResourceAsStream("style.css"))))
+        {
+            String line;
+            while((line = reader.readLine()) != null)
+            {
+                builder.append(line).append('\n');
+            }
+        }
+        catch(IOException e)
+        {
+            System.err.println(e.getMessage());
+        }
+
+        return builder.toString();
+    }
+
     private void writeHeader(Node node, StringBuilder builder)
     {
         switch(node.getToken())
         {
         case DOCUMENT:
             builder.append("<html><head><title>").append(((Document)node).getTitle())
-                    .append("</title></head><body>");
+                    .append("</title><style>").append(loadStylesheet())
+                    .append("</style></head><body>");
             break;
         case HEADING:
             builder.append("<h").append(((Heading)node).getLevel()).append(">");
@@ -51,13 +76,15 @@ public class HtmlParser
             builder.append("<li>");
             break;
         case TABLE:
+            ((Table)node).applyAlignments();
             builder.append("<table>");
             break;
         case TABLE_ROW:
             builder.append("<tr>");
             break;
         case TABLE_CELL:
-            builder.append("<td>");
+            builder.append("<td class=\"align-")
+                    .append(((TableCell)node).getAlign().toString().toLowerCase()).append("\">");
             break;
         }
     }

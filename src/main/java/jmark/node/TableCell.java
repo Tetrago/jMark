@@ -4,9 +4,11 @@ import jmark.Token;
 
 public class TableCell extends Node
 {
-    public TableCell()
+    private Table.Align align_ = Table.Align.LEFT;
+
+    public void align(Table.Align align)
     {
-        super(Token.TABLE_CELL);
+        align_ = align;
     }
 
     @Override
@@ -22,8 +24,16 @@ public class TableCell extends Node
     }
 
     @Override
+    public Token getToken()
+    {
+        return Token.TABLE_CELL;
+    }
+
+    @Override
     public String toString()
     {
-        return "Cell";
+        return "Cell: " + align_.toString();
     }
+
+    public Table.Align getAlign() { return align_; }
 }

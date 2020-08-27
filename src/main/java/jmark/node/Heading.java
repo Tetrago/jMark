@@ -8,8 +8,6 @@ public class Heading extends Node
 
     public Heading(int level)
     {
-        super(Token.HEADING);
-
         level_ = level;
     }
 
@@ -23,6 +21,12 @@ public class Heading extends Node
     public boolean accepts(Node node)
     {
         return node.getToken() == Token.TEXT;
+    }
+
+    @Override
+    public Token getToken()
+    {
+        return Token.HEADING;
     }
 
     @Override

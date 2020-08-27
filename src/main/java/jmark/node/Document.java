@@ -8,8 +8,6 @@ public class Document extends Node
 
     public Document(String title)
     {
-        super(Token.DOCUMENT);
-
         title_ = title;
     }
 
@@ -23,6 +21,12 @@ public class Document extends Node
     public boolean accepts(Node node)
     {
         return true;
+    }
+
+    @Override
+    public Token getToken()
+    {
+        return Token.DOCUMENT;
     }
 
     @Override

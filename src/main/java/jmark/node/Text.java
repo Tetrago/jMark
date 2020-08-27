@@ -8,8 +8,6 @@ public class Text extends Node
 
     public Text(String text)
     {
-        super(Token.TEXT);
-
         text_ = text;
     }
 
@@ -23,6 +21,12 @@ public class Text extends Node
     public boolean accepts(Node node)
     {
         return false;
+    }
+
+    @Override
+    public Token getToken()
+    {
+        return Token.TEXT;
     }
 
     @Override
