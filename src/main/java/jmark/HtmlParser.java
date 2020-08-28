@@ -100,6 +100,10 @@ public class HtmlParser
             break;
         case STYLE:
             builder.append(findStyleTags(((StyleNode)node).getType()));
+            break;
+        case HYPERLINK:
+            builder.append("<a href=\"").append(((Hyperlink)node).getLocation()).append("\">");
+            break;
         }
     }
 
@@ -133,6 +137,9 @@ public class HtmlParser
             break;
         case STYLE:
             builder.append(findStyleTags(((StyleNode)node).getType()).replaceAll("<", "</"));
+            break;
+        case HYPERLINK:
+            builder.append("</a>");
             break;
         }
     }

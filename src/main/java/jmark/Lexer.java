@@ -8,7 +8,8 @@ import java.util.regex.Pattern;
 
 public class Lexer
 {
-    private static final Pattern PATTERN = Pattern.compile("(?<style>(?<styleCount>\\*+)(?<styleText>[^*]+)\\*+)|(?<table>(\\| *[:-]+ *)+\\|)|(?<row>(\\|[^\\|\\n]+)+\\|)|(?<heading>#+)|(?<item>(?<ordered>\\d\\.)|(-))|(?<text>[^\\n]+)");
+    private static final Pattern PATTERN = Pattern.compile(
+            "(?<style>(?<styleCount>\\*+)(?<styleText>[^*]+)\\*+)|(?<table>(\\| *[:-]+ *)+\\|)|(?<row>(\\|[^\\|\\n]+)+\\|)|(?<heading>#+)|(?<item>(?<ordered>\\d\\.)|(-))|(?<link>\\[(?<linkText>[^\\n]+)\\]\\((?<linkLocation>[^\\n]+)\\))|(?<text>[^\\n]+)");
 
     private String title_;
     private Node document_;
@@ -156,6 +157,22 @@ public class Lexer
 
                 stack.peek().add(item);
                 stack.push(item);
+            }
+            else if((match = matcher.group("link")) != null)    // Link -----------------------------------------
+            {
+                String text = matcher.group("linkText");
+                String location = matcher.group("linkLocation");
+                Hyperlink link = new Hyperlink(location);
+
+                int level = stack.size();
+                addWhenValid(link, true);
+
+                recursiveAnalyzer(text, stack);
+
+                while(stack.size() > level)
+                {
+                    stack.pop();
+                }
             }
             else if((match = matcher.group("text")) != null)    // Text -----------------------------------------
             {

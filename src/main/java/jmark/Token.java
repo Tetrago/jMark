@@ -10,5 +10,6 @@ public enum Token
     TABLE,
     TABLE_ROW,
     TABLE_CELL,
-    STYLE
+    STYLE,
+    HYPERLINK
 }

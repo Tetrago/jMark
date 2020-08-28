@@ -31,6 +31,12 @@ public class StyleNode extends Node
     }
 
     @Override
+    public String toString()
+    {
+        return "Style: " + type_.toString().toLowerCase();
+    }
+
+    @Override
     public Token getToken()
     {
         return Token.STYLE;
