@@ -8,7 +8,7 @@ import java.util.regex.Pattern;
 
 public class Lexer
 {
-    private static final Pattern PATTERN = Pattern.compile("(?<table>(\\| *[:-]+ *)+\\|)|(?<row>(\\|[^\\|\\n]+)+\\|)|(?<heading>#+)|(?<item>(?<ordered>\\d\\.)|(-))|(?<text>[^\\n]+)");
+    private static final Pattern PATTERN = Pattern.compile("(?<style>(?<styleCount>\\*+)(?<styleText>[^*]+)\\*+)|(?<table>(\\| *[:-]+ *)+\\|)|(?<row>(\\|[^\\|\\n]+)+\\|)|(?<heading>#+)|(?<item>(?<ordered>\\d\\.)|(-))|(?<text>[^\\n]+)");
 
     private String title_;
     private Node document_;
@@ -49,7 +49,38 @@ public class Lexer
         while(matcher.find())
         {
             String match;
-            if((match = matcher.group("table")) != null         // Table ----------------------------------------
+            if((match = matcher.group("style")) != null)        // Style ----------------------------------------
+            {
+                StyleNode.Type type;
+
+                switch(matcher.group("styleCount").length())
+                {
+                default:
+                case 1:
+                    type = StyleNode.Type.ITALIC;
+                    break;
+                case 2:
+                    type = StyleNode.Type.BOLD;
+                    break;
+                case 3:
+                    type = StyleNode.Type.BOTH;
+                    break;
+                }
+
+                StyleNode style = new StyleNode(type);
+
+                int level = stack.size();
+                addWhenValid(style, true);
+
+                String text = matcher.group("styleText");
+                recursiveAnalyzer(text, stack);
+
+                while(stack.size() > level)
+                {
+                    stack.pop();
+                }
+            }
+            else if((match = matcher.group("table")) != null    // Table ----------------------------------------
                 && stack.peek().getToken() == Token.TABLE
                 && ((Table)stack.peek()).getNodes().size() == 1)
             {

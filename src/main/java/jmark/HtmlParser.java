@@ -54,6 +54,17 @@ public class HtmlParser
         return builder.toString();
     }
 
+    private String findStyleTags(StyleNode.Type type)
+    {
+        switch(type)
+        {
+        default: return "";
+        case ITALIC: return "<em>";
+        case BOLD: return "<strong>";
+        case BOTH: return "<em><strong>";
+        }
+    }
+
     private void writeHeader(Node node, StringBuilder builder)
     {
         switch(node.getToken())
@@ -83,9 +94,12 @@ public class HtmlParser
             builder.append("<tr>");
             break;
         case TABLE_CELL:
-            builder.append(((TableCell)node).isHeader() ? "<th" : "<td").append(" class=\"align-")
-                    .append(((TableCell)node).getAlign().toString().toLowerCase()).append("\">");
+            TableCell cell = (TableCell)node;
+            builder.append(cell.isHeader() ? "<th" : "<td").append(" class=\"align-")
+                    .append(cell.getAlign().toString().toLowerCase()).append("\">");
             break;
+        case STYLE:
+            builder.append(findStyleTags(((StyleNode)node).getType()));
         }
     }
 
@@ -116,6 +130,9 @@ public class HtmlParser
             break;
         case TABLE_CELL:
             builder.append(((TableCell)node).isHeader() ? "</th>" : "</td>");
+            break;
+        case STYLE:
+            builder.append(findStyleTags(((StyleNode)node).getType()).replaceAll("<", "</"));
             break;
         }
     }

@@ -9,5 +9,6 @@ public enum Token
     LIST_ITEM,
     TABLE,
     TABLE_ROW,
-    TABLE_CELL
+    TABLE_CELL,
+    STYLE
 }
