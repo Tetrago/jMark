@@ -8,8 +8,12 @@ import java.util.regex.Pattern;
 
 public class Lexer
 {
-    private static final Pattern PATTERN = Pattern.compile(
-            "(?<style>(?<styleCount>\\*+)(?<styleText>[^*]+)\\*+)|(?<table>(\\| *[:-]+ *)+\\|)|(?<row>(\\|[^\\|\\n]+)+\\|)|(?<heading>#+)|(?<item>(?<ordered>\\d\\.)|(-))|(?<link>\\[(?<linkText>[^\\n]+)\\]\\((?<linkLocation>[^\\n]+)\\))|(?<text>[^\\n]+)");
+    private static final Pattern PATTERN = Pattern.compile("(?<style>(?<styleCount>\\*+)(?<styleText>[^*]+)\\*+)" +
+            "|(?<table>(\\| *[:-]+ *)+\\|)|(?<row>(\\|[^\\|\\n]+)+\\|)" +
+            "|(?<heading>#+)|(?<item>(?<ordered>\\d\\.)|(-))" +
+            "|(?<image>!\\[(?<imageAlt>[^\\n\\]]+)\\]\\((?<imagePath>[^\\n\\)]+) \"(?<imageTitle>[^\\n\"]+)\"\\))" +
+            "|(?<link>\\[(?<linkText>[^\\n]+)\\]\\((?<linkLocation>[^\\n]+)\\))" +
+            "|(?<text>[^\\n]+)");
 
     private String title_;
     private Node document_;
@@ -157,6 +161,13 @@ public class Lexer
 
                 stack.peek().add(item);
                 stack.push(item);
+            }
+            else if((match = matcher.group("image")) != null)   // Image ----------------------------------------
+            {
+                addWhenValid(new Image(
+                        matcher.group("imageAlt"),
+                        matcher.group("imagePath"),
+                        matcher.group("imageTitle")));
             }
             else if((match = matcher.group("link")) != null)    // Link -----------------------------------------
             {

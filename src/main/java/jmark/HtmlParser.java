@@ -104,6 +104,13 @@ public class HtmlParser
         case HYPERLINK:
             builder.append("<a href=\"").append(((Hyperlink)node).getLocation()).append("\">");
             break;
+        case IMAGE:
+            Image image = (Image)node;
+            builder.append("<img src=\"")
+                    .append(image.getPath()).append("\" alt=\"")
+                    .append(image.getAlt()).append("\" title=\"")
+                    .append(image.getTitle()).append("\">");
+            break;
         }
     }
 
