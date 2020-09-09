@@ -28,6 +28,8 @@ This is a paragraph (sort of).
 There should be some `inline code` here.
 ***But it doesn't work properly.***
 
+> Hopefully a working block quote
+
 ```
 This is a code block.
 ```

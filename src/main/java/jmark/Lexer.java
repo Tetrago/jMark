@@ -9,7 +9,8 @@ import java.util.regex.Pattern;
 public class Lexer
 {
     private static final Pattern PATTERN = Pattern.compile(
-            "(?<codeBlock>```\\n*?(?<codeBlockCode>.+)\\n*?```)|(?<inlineCode>`(?<inlineCodeCode>.+)`)" +
+            "(> +(?<blockQuote>[^\\n]+))" +
+            "|(?<codeBlock>```\\n*?(?<codeBlockCode>.+)\\n*?```)|(?<inlineCode>`(?<inlineCodeCode>.+)`)" +
             "|(?<style>(?<styleCount>\\*+)(?<styleText>[^*]+)\\*+)" +
             "|(?<table>(\\| *[:-]+ *)+\\|)|(?<row>(\\|[^|\\n]+)+\\|)" +
             "|(?<heading>#+)|(?<item>(?<ordered>\\d\\.)|(-))" +
@@ -102,7 +103,21 @@ public class Lexer
         while(matcher.find())
         {
             String match;
-            if((match = matcher.group("codeBlock")) != null)    // Block Code -----------------------------------
+            if((match = matcher.group("blockQuote")) != null)   // Block Quote ----------------------------------
+            {
+                if(stack_.peek().getToken() != Token.BLOCK_QUOTE)
+                {
+                    addWhenValid(new BlockQuote(), true);
+                }
+
+                int level = stack_.size();
+
+                addWhenValid(new BlockQuote.Item(), true);
+                recursiveAnalyzer(match);
+
+                restore(level);
+            }
+            else if((match = matcher.group("codeBlock")) != null)   // Block Code -------------------------------
             {
                 addWhenValid(new Code(matcher.group("codeBlockCode"),true));
             }

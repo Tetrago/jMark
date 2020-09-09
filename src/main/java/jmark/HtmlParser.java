@@ -151,6 +151,9 @@ public class HtmlParser
             builder.append("<code>");
             builder.append(code.getText());
             break;
+        case BLOCK_QUOTE:
+            builder.append("<blockquote>");
+            break;
         }
     }
 
@@ -202,6 +205,9 @@ public class HtmlParser
                 builder.append("</pre>");
             }
 
+            break;
+        case BLOCK_QUOTE:
+            builder.append("</blockquote>");
             break;
         }
     }
