@@ -15,6 +15,11 @@ public class HtmlParser
         lexer_ = lexer;
     }
 
+    /**
+     * Parses token tree into html.
+     *
+     * @return String of html.
+     */
     public String parse()
     {
         StringBuilder builder = new StringBuilder();
@@ -22,6 +27,12 @@ public class HtmlParser
         return builder.toString();
     }
 
+    /**
+     * Recursive method to parse node its children.
+     *
+     * @param node      Base node.
+     * @param builder   String builder to append.
+     */
     private void recursiveParse(Node node, StringBuilder builder)
     {
         writeHeader(node, builder);
@@ -34,6 +45,11 @@ public class HtmlParser
         writeFooter(node, builder);
     }
 
+    /**
+     * Loads embedded stylesheet into string.
+     *
+     * @return Stylesheet data.
+     */
     private String loadStylesheet()
     {
         StringBuilder builder = new StringBuilder();
@@ -54,6 +70,13 @@ public class HtmlParser
         return builder.toString();
     }
 
+    /***
+     * Finds tags used for styling.
+     *
+     * @param type  Enum type.
+     *
+     * @return String style tag.
+     */
     private String findStyleTags(StyleNode.Type type)
     {
         switch(type)
@@ -65,6 +88,12 @@ public class HtmlParser
         }
     }
 
+    /***
+     * Writes beginning tag for node.
+     *
+     * @param node      Node to parse.
+     * @param builder   Builder to append to.
+     */
     private void writeHeader(Node node, StringBuilder builder)
     {
         switch(node.getToken())
@@ -111,9 +140,26 @@ public class HtmlParser
                     .append(image.getAlt()).append("\" title=\"")
                     .append(image.getTitle()).append("\">");
             break;
+        case CODE:
+            Code code = (Code)node;
+
+            if(code.isMultiline())
+            {
+                builder.append("<pre>");
+            }
+
+            builder.append("<code>");
+            builder.append(code.getText());
+            break;
         }
     }
 
+    /***
+     * Wrties ending tag for node.
+     *
+     * @param node      Node to parse.
+     * @param builder   Builder to append.
+     */
     private void writeFooter(Node node, StringBuilder builder)
     {
         switch(node.getToken())
@@ -147,6 +193,15 @@ public class HtmlParser
             break;
         case HYPERLINK:
             builder.append("</a>");
+            break;
+        case CODE:
+            builder.append("</code>");
+
+            if(((Code)node).isMultiline())
+            {
+                builder.append("</pre>");
+            }
+
             break;
         }
     }

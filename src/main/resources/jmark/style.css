@@ -38,6 +38,16 @@ a
     text-decoration: none;
 }
 
+code
+{
+    background-color: transparent;
+    color: #567482;
+    font-size: 0.9rem;
+    border: 1px solid #dce6f0;
+    padding: 5px;
+    border-radius: 0.3rem;
+}
+
 a:hover
 {
     text-decoration: underline;

@@ -8,31 +8,59 @@ import java.util.regex.Pattern;
 
 public class Lexer
 {
-    private static final Pattern PATTERN = Pattern.compile("(?<style>(?<styleCount>\\*+)(?<styleText>[^*]+)\\*+)" +
-            "|(?<table>(\\| *[:-]+ *)+\\|)|(?<row>(\\|[^\\|\\n]+)+\\|)" +
+    private static final Pattern PATTERN = Pattern.compile(
+            "(?<codeBlock>```\\n*?(?<codeBlockCode>.+)\\n*?```)|(?<inlineCode>`(?<inlineCodeCode>.+)`)" +
+            "|(?<style>(?<styleCount>\\*+)(?<styleText>[^*]+)\\*+)" +
+            "|(?<table>(\\| *[:-]+ *)+\\|)|(?<row>(\\|[^|\\n]+)+\\|)" +
             "|(?<heading>#+)|(?<item>(?<ordered>\\d\\.)|(-))" +
-            "|(?<image>!\\[(?<imageAlt>[^\\n\\]]+)\\]\\((?<imagePath>[^\\n\\)]+) \"(?<imageTitle>[^\\n\"]+)\"\\))" +
-            "|(?<link>\\[(?<linkText>[^\\n]+)\\]\\((?<linkLocation>[^\\n]+)\\))" +
+            "|(?<image>!\\[(?<imageAlt>[^\\n\\]]+)]\\((?<imagePath>[^\\n)]+) \"(?<imageTitle>[^\\n\"]+)\"\\))" +
+            "|(?<link>\\[(?<linkText>[^\\n]+)]\\((?<linkLocation>[^\\n]+)\\))" +
             "|(?<text>[^\\n]+)");
 
     private String title_;
     private Node document_;
     private Stack<Node> stack_ = new Stack<>();
 
+    /**
+     * Creates and titles document.
+     *
+     * @param title Title of page.
+     */
     public Lexer(String title)
     {
         title_ = title;
     }
 
+    /**
+     * Analyzes markdown.
+     *
+     * @param source    Markdown data.
+     */
     public void analyze(String source)
     {
         stack_.clear();
         stack_.add(document_ = new Document(title_));
 
-        recursiveAnalyzer(source, stack_);
+        recursiveAnalyzer(source);
     }
 
+    /**
+     * Adds to stack.
+     *
+     * <p>Will pop from stack until the top can accept a given node.</p>
+     *
+     * @param node  Node to add to top.
+     */
     private void addWhenValid(Node node) { addWhenValid(node, false); }
+
+    /**
+     * Adds to stack.
+     *
+     * <p>Will pop from stack until the top can accept a given node.</p>
+     *
+     * @param node  Node to add to top.
+     * @param push  Whether to push this element onto the stack on addition.
+     */
     private void addWhenValid(Node node, boolean push)
     {
         while(!stack_.peek().accepts(node))
@@ -47,14 +75,42 @@ public class Lexer
         }
     }
 
-    private void recursiveAnalyzer(String data, Stack<Node> stack)
+    /**
+     * Restores stack size.
+     *
+     * <p>Pops from stack until size is reached.</p>
+     *
+     * @param level Target stack size.
+     */
+    private void restore(int level)
+    {
+        while(stack_.size() > level)
+        {
+            stack_.pop();
+        }
+    }
+
+    /**
+     * Parses string into node tree.
+     *
+     * @param data  String to parse.
+     */
+    private void recursiveAnalyzer(String data)
     {
         Matcher matcher = PATTERN.matcher(data);
 
         while(matcher.find())
         {
             String match;
-            if((match = matcher.group("style")) != null)        // Style ----------------------------------------
+            if((match = matcher.group("codeBlock")) != null)    // Block Code -----------------------------------
+            {
+                addWhenValid(new Code(matcher.group("codeBlockCode"),true));
+            }
+            else if((match = matcher.group("inlineCode")) != null)  // Inline Code ------------------------------
+            {
+                addWhenValid(new Code(matcher.group("inlineCodeCode"),false));
+            }
+            else if((match = matcher.group("style")) != null)   // Style ----------------------------------------
             {
                 StyleNode.Type type;
 
@@ -74,22 +130,19 @@ public class Lexer
 
                 StyleNode style = new StyleNode(type);
 
-                int level = stack.size();
+                int level = stack_.size();
                 addWhenValid(style, true);
 
                 String text = matcher.group("styleText");
-                recursiveAnalyzer(text, stack);
+                recursiveAnalyzer(text);
 
-                while(stack.size() > level)
-                {
-                    stack.pop();
-                }
+                restore(level);
             }
             else if((match = matcher.group("table")) != null    // Table ----------------------------------------
-                && stack.peek().getToken() == Token.TABLE
-                && ((Table)stack.peek()).getNodes().size() == 1)
+                && stack_.peek().getToken() == Token.TABLE
+                && ((Table)stack_.peek()).getNodes().size() == 1)
             {
-                Table table = (Table)stack.peek();
+                Table table = (Table)stack_.peek();
 
                 String[] split = match.split("\\|");
 
@@ -116,33 +169,30 @@ public class Lexer
                 String[] split = match.split("\\|");
 
                 boolean header = false;
-                if(stack.peek().getToken() != Token.TABLE)
+                if(stack_.peek().getToken() != Token.TABLE)
                 {
                     addWhenValid(new Table(split.length - 1), true);
                     header = true;
                 }
 
                 TableRow row = new TableRow();
-                stack.push(row);
+                stack_.push(row);
 
                 for(int i = 1; i < split.length; ++i)
                 {
                     TableCell cell = new TableCell(header);
-                    int level = stack.size();
+                    int level = stack_.size();
 
                     row.add(cell);
-                    stack.push(cell);
+                    stack_.push(cell);
 
-                    recursiveAnalyzer(split[i].trim(), stack);
+                    recursiveAnalyzer(split[i].trim());
 
-                    while(stack.size() > level)
-                    {
-                        stack.pop();
-                    }
+                    restore(level);
                 }
 
-                stack.pop();
-                stack.peek().add(row);
+                stack_.pop();
+                stack_.peek().add(row);
             }
             else if((match = matcher.group("heading")) != null) // Heading --------------------------------------
             {
@@ -154,13 +204,13 @@ public class Lexer
 
                 Node item = new ListItem(ordered);
 
-                if(stack.peek().getToken() != Token.LIST_GROUP || !stack.peek().accepts(item))
+                if(stack_.peek().getToken() != Token.LIST_GROUP || !stack_.peek().accepts(item))
                 {
                     addWhenValid(new ListGroup(ordered), true);
                 }
 
-                stack.peek().add(item);
-                stack.push(item);
+                stack_.peek().add(item);
+                stack_.push(item);
             }
             else if((match = matcher.group("image")) != null)   // Image ----------------------------------------
             {
@@ -175,24 +225,21 @@ public class Lexer
                 String location = matcher.group("linkLocation");
                 Hyperlink link = new Hyperlink(location);
 
-                int level = stack.size();
+                int level = stack_.size();
                 addWhenValid(link, true);
 
-                recursiveAnalyzer(text, stack);
+                recursiveAnalyzer(text);
 
-                while(stack.size() > level)
-                {
-                    stack.pop();
-                }
+                restore(level);
             }
             else if((match = matcher.group("text")) != null)    // Text -----------------------------------------
             {
                 addWhenValid(new Text(match.trim()));
             }
 
-            while(stack.peek().isComplete())
+            while(stack_.peek().isComplete())
             {
-                stack.pop();
+                stack_.pop();
             }
         }
     }
@@ -205,6 +252,13 @@ public class Lexer
         return builder.toString();
     }
 
+    /**
+     * String parser to convert tree in {@link #toString()}
+     *
+     * @param node        Node to convert to string.
+     * @param builder     Builder to add to.
+     * @param indentLevel Current level of indentation.
+     */
     private void recursiveString(Node node, StringBuilder builder, int indentLevel)
     {
         builder.append("\t".repeat(indentLevel)).append(node).append('\n');
@@ -215,5 +269,10 @@ public class Lexer
         }
     }
 
+    /**
+     * Gets the root node of the node tree.
+     *
+     * @return Root node.
+     */
     public Node getRootNode() { return document_; }
 }

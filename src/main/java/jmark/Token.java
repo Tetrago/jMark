@@ -12,5 +12,6 @@ public enum Token
     TABLE_CELL,
     STYLE,
     HYPERLINK,
-    IMAGE
+    IMAGE,
+    CODE
 }
