@@ -5,3 +5,5 @@ Testing files
 * tree.txt
 * test.md
 * picture.jpg
+
+Jar in releases.

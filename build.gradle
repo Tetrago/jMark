@@ -3,7 +3,7 @@ plugins {
 }
 
 group 'jmark'
-version '1.0'
+version '0.5'
 
 sourceCompatibility = 1.8
 
@@ -14,4 +14,14 @@ repositories {
 dependencies {
     testCompile group: 'junit', name: 'junit', version: '4.12'
     compile group: 'commons-cli', name: 'commons-cli', version: '1.4'
+}
+
+jar {
+    manifest {
+        attributes 'Main-Class': 'jmark.Main'
+    }
+
+    from {
+        configurations.runtimeClasspath.collect { it.isDirectory() ? it : zipTree(it) }
+    }
 }
