@@ -11,6 +11,7 @@ This is a paragraph (sort of).
 *This is italic text.*
 **This is bold text.**
 ***This is italic and bold text.***
+~~Please strikethrough~~
 
 - Item 1
 - Item 2

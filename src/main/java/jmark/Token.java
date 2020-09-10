@@ -14,5 +14,6 @@ public enum Token
     HYPERLINK,
     IMAGE,
     CODE,
-    BLOCK_QUOTE
+    BLOCK_QUOTE,
+    STRIKETHROUGH
 }

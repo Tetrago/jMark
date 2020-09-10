@@ -154,6 +154,9 @@ public class HtmlParser
         case BLOCK_QUOTE:
             builder.append("<blockquote>");
             break;
+        case STRIKETHROUGH:
+            builder.append("<del>").append(((Strikethrough)node).getText());
+            break;
         }
     }
 
@@ -208,6 +211,9 @@ public class HtmlParser
             break;
         case BLOCK_QUOTE:
             builder.append("</blockquote>");
+            break;
+        case STRIKETHROUGH:
+            builder.append("</del>");
             break;
         }
     }

@@ -11,6 +11,7 @@ public class Lexer
     private static final Pattern PATTERN = Pattern.compile(
             "(> +(?<blockQuote>[^\\n]+))" +
             "|(?<codeBlock>```\\n*?(?<codeBlockCode>.+)\\n*?```)|(?<inlineCode>`(?<inlineCodeCode>.+)`)" +
+            "|(?<strikethrough>~~(?<strikethroughText>.+)~~)" +
             "|(?<style>(?<styleCount>\\*+)(?<styleText>[^*]+)\\*+)" +
             "|(?<table>(\\| *[:-]+ *)+\\|)|(?<row>(\\|[^|\\n]+)+\\|)" +
             "|(?<heading>#+)|(?<item>(?<ordered>\\d\\.)|(-))" +
@@ -124,6 +125,10 @@ public class Lexer
             else if((match = matcher.group("inlineCode")) != null)  // Inline Code ------------------------------
             {
                 addWhenValid(new Code(matcher.group("inlineCodeCode"),false));
+            }
+            else if((match = matcher.group("strikethrough")) != null)   // Strikethrough ------------------------
+            {
+                addWhenValid(new Strikethrough(matcher.group("strikethroughText")));
             }
             else if((match = matcher.group("style")) != null)   // Style ----------------------------------------
             {
@@ -276,7 +281,12 @@ public class Lexer
      */
     private void recursiveString(Node node, StringBuilder builder, int indentLevel)
     {
-        builder.append("\t".repeat(indentLevel)).append(node).append('\n');
+        for(int i = 0; i < indentLevel; ++i)
+        {
+            builder.append('\t');
+        }
+
+        builder.append(node).append('\n');
 
         for(Node child : node.getNodes())
         {
