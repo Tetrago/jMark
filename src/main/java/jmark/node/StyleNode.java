@@ -1,8 +1,9 @@
 package jmark.node;
 
 import jmark.Token;
+import jmark.html.IHtmlParsable;
 
-public class StyleNode extends Node
+public class StyleNode extends Node implements IHtmlParsable
 {
     public enum Type
     {
@@ -12,10 +13,14 @@ public class StyleNode extends Node
     }
 
     private Type type_;
+    private String open_;
+    private String closed_;
 
     public StyleNode(Type type)
     {
         type_ = type;
+        open_ = findStyleTags(type);
+        closed_ = open_.replaceAll("<", "</");
     }
 
     @Override
@@ -42,5 +47,33 @@ public class StyleNode extends Node
         return Token.STYLE;
     }
 
-    public Type getType() { return type_; }
+    /**
+     * Finds tags used for styling.
+     *
+     * @param type  Type to parse.
+     *
+     * @return String style tag.
+     */
+    private static String findStyleTags(Type type)
+    {
+        switch(type)
+        {
+        default: return "";
+        case ITALIC: return "<em>";
+        case BOLD: return "<strong>";
+        case BOTH: return "<em><strong>";
+        }
+    }
+
+    @Override
+    public void writeHtmlHeader(StringBuilder builder)
+    {
+        builder.append(open_);
+    }
+
+    @Override
+    public void writeHtmlFooter(StringBuilder builder)
+    {
+        builder.append(closed_);
+    }
 }

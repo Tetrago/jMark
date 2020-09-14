@@ -1,8 +1,9 @@
 package jmark.node;
 
 import jmark.Token;
+import jmark.html.ISimpleHtmlParsable;
 
-public class Table extends Node
+public class Table extends Node implements ISimpleHtmlParsable
 {
     public enum Align
     {
@@ -62,4 +63,11 @@ public class Table extends Node
     }
 
     public int getColumnCount() { return columns_; }
+
+    @Override
+    public String getHtmlTagName()
+    {
+        applyAlignments();
+        return "table";
+    }
 }

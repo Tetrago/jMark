@@ -1,8 +1,9 @@
 package jmark.node;
 
 import jmark.Token;
+import jmark.html.IPropertyHtmlParsable;
 
-public class Hyperlink extends Node
+public class Hyperlink extends Node implements IPropertyHtmlParsable
 {
     private String location_;
 
@@ -36,5 +37,15 @@ public class Hyperlink extends Node
         return "Hyperlink: " + location_;
     }
 
-    public String getLocation() { return location_; }
+    @Override
+    public String getHtmlTagProperties()
+    {
+        return String.format("href=\"%s\"", location_);
+    }
+
+    @Override
+    public String getHtmlTagName()
+    {
+        return "a";
+    }
 }

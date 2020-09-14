@@ -1,8 +1,9 @@
 package jmark.node;
 
+import jmark.html.ISimpleHtmlParsable;
 import jmark.Token;
 
-public class BlockQuote extends Node
+public class BlockQuote extends Node implements ISimpleHtmlParsable
 {
     public static class Item extends Node
     {
@@ -41,6 +42,12 @@ public class BlockQuote extends Node
     public boolean accepts(Node node)
     {
         return node.getToken() == Token.BLOCK_QUOTE;
+    }
+
+    @Override
+    public String getHtmlTagName()
+    {
+        return "blockquote";
     }
 
     @Override

@@ -1,8 +1,9 @@
 package jmark.node;
 
 import jmark.Token;
+import jmark.html.ISimpleHtmlParsable;
 
-public class ListItem extends Node
+public class ListItem extends Node implements ISimpleHtmlParsable
 {
     private boolean ordered_;
 
@@ -37,4 +38,10 @@ public class ListItem extends Node
     }
 
     public boolean isOrdered() { return ordered_; }
+
+    @Override
+    public String getHtmlTagName()
+    {
+        return "li";
+    }
 }

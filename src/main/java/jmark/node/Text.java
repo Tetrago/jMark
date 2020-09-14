@@ -1,8 +1,9 @@
 package jmark.node;
 
 import jmark.Token;
+import jmark.html.IHtmlParsable;
 
-public class Text extends Node
+public class Text extends Node implements IHtmlParsable
 {
     private String text_;
 
@@ -35,5 +36,15 @@ public class Text extends Node
         return "Text: " + text_;
     }
 
-    public String getText() { return text_; }
+    @Override
+    public void writeHtmlHeader(StringBuilder builder)
+    {
+        builder.append("<p>").append(text_);
+    }
+
+    @Override
+    public void writeHtmlFooter(StringBuilder builder)
+    {
+        builder.append("</p>");
+    }
 }

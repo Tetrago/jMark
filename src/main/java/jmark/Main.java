@@ -1,5 +1,6 @@
 package jmark;
 
+import jmark.html.HtmlParser;
 import org.apache.commons.cli.*;
 
 import java.io.*;

@@ -1,8 +1,9 @@
 package jmark.node;
 
 import jmark.Token;
+import jmark.html.IHtmlParsable;
 
-public class Strikethrough extends Node
+public class Strikethrough extends Node implements IHtmlParsable
 {
     private String text_;
 
@@ -35,5 +36,15 @@ public class Strikethrough extends Node
         return "Strike Through: " + text_;
     }
 
-    public String getText() { return text_; }
+    @Override
+    public void writeHtmlHeader(StringBuilder builder)
+    {
+        builder.append("<del>").append(text_);
+    }
+
+    @Override
+    public void writeHtmlFooter(StringBuilder builder)
+    {
+        builder.append("</del>");
+    }
 }

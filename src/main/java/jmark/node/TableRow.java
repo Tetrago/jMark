@@ -1,8 +1,9 @@
 package jmark.node;
 
 import jmark.Token;
+import jmark.html.ISimpleHtmlParsable;
 
-public class TableRow extends Node
+public class TableRow extends Node implements ISimpleHtmlParsable
 {
     @Override
     public boolean isComplete()
@@ -26,5 +27,11 @@ public class TableRow extends Node
     public String toString()
     {
         return "Row";
+    }
+
+    @Override
+    public String getHtmlTagName()
+    {
+        return "tr";
     }
 }

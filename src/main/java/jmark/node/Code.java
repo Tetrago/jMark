@@ -1,8 +1,9 @@
 package jmark.node;
 
+import jmark.html.IHtmlParsable;
 import jmark.Token;
 
-public class Code extends Node
+public class Code extends Node implements IHtmlParsable
 {
     private String text_;
     private boolean multiline_;
@@ -37,6 +38,26 @@ public class Code extends Node
         return "Code: " + (multiline_ ? "Block" : "Inline");
     }
 
-    public String getText() { return text_; }
-    public boolean isMultiline() { return multiline_; }
+    @Override
+    public void writeHtmlHeader(StringBuilder builder)
+    {
+        if(multiline_)
+        {
+            builder.append("<pre>");
+        }
+
+        builder.append("<code>");
+        builder.append(text_);
+    }
+
+    @Override
+    public void writeHtmlFooter(StringBuilder builder)
+    {
+        builder.append("</code>");
+
+        if(multiline_)
+        {
+            builder.append("</pre>");
+        }
+    }
 }

@@ -1,8 +1,9 @@
 package jmark.node;
 
 import jmark.Token;
+import jmark.html.IHtmlParsable;
 
-public class Image extends Node
+public class Image extends Node implements IHtmlParsable
 {
     private String alt_;
     private String path_;
@@ -39,7 +40,18 @@ public class Image extends Node
         return "Image: " + title_;
     }
 
-    public String getAlt() { return alt_; }
-    public String getPath() { return path_; }
-    public String getTitle() { return title_; }
+    @Override
+    public void writeHtmlHeader(StringBuilder builder)
+    {
+        builder.append("<img src=\"")
+                .append(path_).append("\" alt=\"")
+                .append(alt_).append("\" title=\"")
+                .append(title_).append("\"/>");
+    }
+
+    @Override
+    public void writeHtmlFooter(StringBuilder builder)
+    {
+
+    }
 }

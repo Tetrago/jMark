@@ -1,8 +1,10 @@
 package jmark.node;
 
+import jmark.html.HtmlParser;
+import jmark.html.IHtmlParsable;
 import jmark.Token;
 
-public class Document extends Node
+public class Document extends Node implements IHtmlParsable
 {
     private String title_;
 
@@ -35,5 +37,17 @@ public class Document extends Node
         return "Document: " + title_;
     }
 
-    public String getTitle() { return title_; }
+    @Override
+    public void writeHtmlHeader(StringBuilder builder)
+    {
+        builder.append("<html><head><title>").append(title_)
+                .append("</title><style>").append(HtmlParser.loadStylesheet())
+                .append("</style></head><body>");
+    }
+
+    @Override
+    public void writeHtmlFooter(StringBuilder builder)
+    {
+        builder.append("</body></html>");
+    }
 }

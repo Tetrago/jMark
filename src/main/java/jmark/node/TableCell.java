@@ -1,13 +1,13 @@
 package jmark.node;
 
 import jmark.Token;
+import jmark.html.IHtmlParsable;
 
-public class TableCell extends Node
+public class TableCell extends Node implements IHtmlParsable
 {
     private boolean header_;
     private Table.Align align_ = Table.Align.LEFT;
 
-    public TableCell() { this(false); }
     public TableCell(boolean header)
     {
         header_ = header;
@@ -42,6 +42,16 @@ public class TableCell extends Node
         return "Cell: " + align_.toString();
     }
 
-    public boolean isHeader() { return header_; }
-    public Table.Align getAlign() { return align_; }
+    @Override
+    public void writeHtmlHeader(StringBuilder builder)
+    {
+        builder.append(header_ ? "<th" : "<td").append(" class=\"align-")
+                .append(align_.toString().toLowerCase()).append("\">");
+    }
+
+    @Override
+    public void writeHtmlFooter(StringBuilder builder)
+    {
+        builder.append(header_ ? "</th>" : "</td>");
+    }
 }
