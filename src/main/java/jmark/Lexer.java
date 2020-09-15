@@ -9,15 +9,17 @@ import java.util.regex.Pattern;
 public class Lexer
 {
     private static final Pattern PATTERN = Pattern.compile(
-            "(> +(?<blockQuote>[^\\n]+))" +
-            "|(?<codeBlock>```\\n*?(?<codeBlockCode>.+)\\n*?```)|(?<inlineCode>`(?<inlineCodeCode>.+)`)" +
-            "|(?<strikethrough>~~(?<strikethroughText>.+)~~)" +
-            "|(?<style>(?<styleCount>\\*+)(?<styleText>[^*]+)\\*+)" +
-            "|(?<table>(\\| *[:-]+ *)+\\|)|(?<row>(\\|[^|\\n]+)+\\|)" +
-            "|(?<heading>#+)|(?<item>(?<ordered>\\d\\.)|(-))" +
-            "|(?<image>!\\[(?<imageAlt>[^\\n\\]]+)]\\((?<imagePath>[^\\n)]+) \"(?<imageTitle>[^\\n\"]+)\"\\))" +
-            "|(?<link>\\[(?<linkText>[^\\n]+)]\\((?<linkLocation>[^\\n]+)\\))" +
-            "|(?<text>[^\\n]+)");
+            "(> +(?<blockQuote>[^\\n]+))" +                                                                         // Block Quote
+            "|(?<codeBlock>```\\n*?(?<codeBlockCode>.+)\\n*?```)|(?<inlineCode>`(?<inlineCodeCode>.+)`)" +          // Code Block
+            "|(?<strikethrough>~~(?<strikethroughText>.+)~~)" +                                                     // Strikethrough
+            "|(?<style>(?<styleCount>\\*+)(?<styleText>[^*]+)\\*+)" +                                               // Styling
+            "|(?<table>(\\| *[:-]+ *)+\\|)|(?<row>(\\|[^|\\n]+)+\\|)" +                                             // Table
+            "|(?<checklist>- *\\[(?<checklistValue>[x ])\\] *)" +
+            "|(?<heading>#+)" +                                                                                     // Heading
+            "|(?<item>(?<ordered>\\d\\.)|(-))" +                                                                    // List
+            "|(?<image>!\\[(?<imageAlt>[^\\n\\]]+)]\\((?<imagePath>[^\\n)]+) \"(?<imageTitle>[^\\n\"]+)\"\\))" +    // Image
+            "|(?<link>\\[(?<linkText>[^\\n]+)]\\((?<linkLocation>[^\\n]+)\\))" +                                    // Link
+            "|(?<text>[^\\n]+)");                                                                                   // Text
 
     private String title_;
     private Node document_;
@@ -214,6 +216,18 @@ public class Lexer
                 stack_.pop();
                 stack_.peek().add(row);
             }
+            else if((match = matcher.group("checklist")) != null)   // Checklist --------------------------------
+            {
+                boolean value = matcher.group("checklistValue").equals("x");
+                Node item = new ChecklistItem(value);
+
+                if(stack_.peek().getToken() != Token.CHECKLIST_GROUP)
+                {
+                    addWhenValid(new ChecklistGroup(), true);
+                }
+
+                addWhenValid(item, true);
+            }
             else if((match = matcher.group("heading")) != null) // Heading --------------------------------------
             {
                 addWhenValid(new Heading(match.length()), true);
@@ -229,8 +243,7 @@ public class Lexer
                     addWhenValid(new ListGroup(ordered), true);
                 }
 
-                stack_.peek().add(item);
-                stack_.push(item);
+                addWhenValid(item, true);
             }
             else if((match = matcher.group("image")) != null)   // Image ----------------------------------------
             {

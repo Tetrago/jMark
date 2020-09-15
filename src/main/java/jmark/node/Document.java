@@ -48,6 +48,7 @@ public class Document extends Node implements IHtmlParsable
     @Override
     public void writeHtmlFooter(StringBuilder builder)
     {
-        builder.append("</body></html>");
+        builder.append("<script>").append(HtmlParser.loadScript()).append("</script>")
+                .append("</body></html>");
     }
 }

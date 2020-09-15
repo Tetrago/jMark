@@ -33,7 +33,7 @@ public class Strikethrough extends Node implements IHtmlParsable
     @Override
     public String toString()
     {
-        return "Strike Through: " + text_;
+        return "Strikethrough: " + text_;
     }
 
     @Override

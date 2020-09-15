@@ -15,5 +15,7 @@ public enum Token
     IMAGE,
     CODE,
     BLOCK_QUOTE,
-    STRIKETHROUGH
+    STRIKETHROUGH,
+    CHECKLIST_GROUP,
+    CHECKLIST_ITEM
 }

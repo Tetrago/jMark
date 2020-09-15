@@ -21,6 +21,9 @@ This is a paragraph (sort of).
 2. Item
 3. Item
 
+- [x] list
+- [ ] of checks
+
 | Key     | Data                    |
 |:-------:|:------------------------|
 | A       | Item A                  |

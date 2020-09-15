@@ -52,3 +52,13 @@ a:hover
 {
     text-decoration: underline;
 }
+
+.checklist
+{
+    list-style-type: none;
+}
+
+.checklist input
+{
+    float: left;
+}

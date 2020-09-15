@@ -31,8 +31,8 @@ public class HtmlParser
     /**
      * Recursive method to parse node its children.
      *
-     * @param node      Base node.
-     * @param builder   String builder to append.
+     * @param node Base node.
+     * @param builder String builder to append.
      */
     private void recursiveParse(Node node, StringBuilder builder)
     {
@@ -47,15 +47,17 @@ public class HtmlParser
     }
 
     /**
-     * Loads embedded stylesheet into string.
+     * Loads embedded resource into string.
      *
-     * @return Stylesheet data.
+     * @param name Name of resource.
+     *
+     * @return Loaded resource data.
      */
-    public static String loadStylesheet()
+    private static String loadResource(String name)
     {
         StringBuilder builder = new StringBuilder();
 
-        try(BufferedReader reader = new BufferedReader(new InputStreamReader(HtmlParser.class.getResourceAsStream("style.css"))))
+        try(BufferedReader reader = new BufferedReader(new InputStreamReader(HtmlParser.class.getResourceAsStream(name))))
         {
             String line;
             while((line = reader.readLine()) != null)
@@ -69,6 +71,26 @@ public class HtmlParser
         }
 
         return builder.toString();
+    }
+
+    /**
+     * Loads embedded stylesheet into string.
+     *
+     * @return Stylesheet data.
+     */
+    public static String loadStylesheet()
+    {
+        return loadResource("style.css");
+    }
+
+    /**
+     * Loads embedded JavaScript into string.
+     *
+     * @return JavaScript code.
+     */
+    public static String loadScript()
+    {
+        return loadResource("script.js");
     }
 
     /**
