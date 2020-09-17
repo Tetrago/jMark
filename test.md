@@ -29,8 +29,7 @@ This is a paragraph (sort of).
 | A       | Item A                  |
 | B       | Item B                  |
 
-There should be some `inline code` here.
-***But it doesn't work properly.***
+`inline code`
 
 > Hopefully a working block quote
 
